@@ -30,3 +30,60 @@ __________________________________________________________________________
 __________________________________________________________________________
 
 # Docker-compose
+Le docker-compose est sous la racine du project.Il va nous serevir pour la création des image docker pour le frondend et le backend:
+     
+    version: '3'
+
+    services:
+
+    # Service React défini sur le port 3000 de la pachine
+    frontend:
+    build: ./frontend
+    container_name: react-app
+    ports:
+      - 3000:3000
+
+    # Service mongo
+     mongodb:
+    image: mongo:latest
+    container_name: mongo
+    volumes: 
+      - 'mongo-data:/data/db'
+    networks:
+      - backend
+
+     # Service NodeJS avec une variable d'environnement pour interagir avec MongoDB
+     backend:
+    build: ./backend
+    container_name: nodejs
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/dbdev
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+    ports:
+      - 8080:8080
+
+
+    # Volume permettant la persistance des données
+    volumes:
+    mongo-data:
+
+    networks:
+    backend:
+    driver: bridge
+__________________________________________________________________________
+# Architecture projet
+
+l'architecture du project :
+
+![Project Docker](https://user-images.githubusercontent.com/105588266/168471950-0818f5e9-5687-4548-81e0-a51dc91d7bbc.PNG)
+
+__________________________________________________________________________
+
+# Build
+
+Lancer le docker-compose:
+        
+    docker-compose up
