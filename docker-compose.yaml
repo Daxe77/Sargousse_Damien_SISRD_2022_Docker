@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+  # Service React défini sur le port 3000 de la pachine
+  frontend:
+    build: ./frontend
+    container_name: react-app
+    ports:
+      - 3000:3000
+
+  # Service mongo
+  mongodb:
+    image: mongo:latest
+    container_name: mongo
+    volumes: 
+      - 'mongo-data:/data/db'
+    networks:
+      - backend
+
+  # Service NodeJS avec une variable d'environnement pour interagir avec MongoDB
+  backend:
+    build: ./backend
+    container_name: nodejs
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/dbdev
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+    ports:
+      - 8080:8080
+
+
+# Volume permettant la persistance des données
+volumes:
+  mongo-data:
+
+networks:
+  backend:
+    driver: bridge
